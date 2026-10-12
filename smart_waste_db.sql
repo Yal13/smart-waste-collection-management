@@ -117,3 +117,75 @@ mysql> SHOW TABLES;
 4 rows in set (0.05 sec)
 
 mysql>
+
+CREATE DATABASE IF NOT EXISTS smart_waste_db;
+USE smart_waste_db;
+
+CREATE TABLE IF NOT EXISTS users (
+    user_id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    email VARCHAR(100) UNIQUE NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    phone VARCHAR(15),
+    role VARCHAR(20) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS bins (
+    bin_id INT AUTO_INCREMENT PRIMARY KEY,
+    location VARCHAR(200) NOT NULL,
+    bin_type VARCHAR(50),
+    capacity INT,
+    fill_level INT DEFAULT 0,
+    status VARCHAR(20) DEFAULT 'Active'
+);
+
+CREATE TABLE IF NOT EXISTS workers (
+    worker_id INT AUTO_INCREMENT PRIMARY KEY,
+    worker_name VARCHAR(100) NOT NULL,
+    phone VARCHAR(15),
+    address VARCHAR(200),
+    shift_time VARCHAR(50)
+);
+
+CREATE TABLE IF NOT EXISTS vehicles (
+    vehicle_id INT AUTO_INCREMENT PRIMARY KEY,
+    vehicle_number VARCHAR(20) UNIQUE,
+    vehicle_type VARCHAR(50),
+    driver_name VARCHAR(100),
+    capacity INT
+);
+
+CREATE TABLE IF NOT EXISTS collection_schedule (
+    schedule_id INT AUTO_INCREMENT PRIMARY KEY,
+    bin_id INT,
+    worker_id INT,
+    vehicle_id INT,
+    collection_date DATE,
+    status VARCHAR(30) DEFAULT 'Pending',
+    FOREIGN KEY (bin_id) REFERENCES bins(bin_id),
+    FOREIGN KEY (worker_id) REFERENCES workers(worker_id),
+    FOREIGN KEY (vehicle_id) REFERENCES vehicles(vehicle_id)
+);
+
+CREATE TABLE IF NOT EXISTS complaints (
+    complaint_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT,
+    location VARCHAR(200) NOT NULL,
+    description TEXT,
+    complaint_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    status VARCHAR(30) DEFAULT 'Pending',
+    FOREIGN KEY (user_id) REFERENCES users(user_id)
+);
+
+INSERT INTO users (name, email, password, phone, role)
+VALUES (
+    'Admin',
+    'admin@example.com',
+    'Admin@12345',
+    '9876543210',
+    'Admin'
+)
+ON DUPLICATE KEY UPDATE email = email;
+
+SHOW TABLES;
+SELECT user_id, name, email, role FROM users;
